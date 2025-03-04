@@ -1,15 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Navigation } from "@/components/Navigation";
 import { useTask } from "@/contexts/TaskContext";
-import { Trash2, Edit, Sun, Moon } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { Sun, Moon, Plus } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { useTheme } from "next-themes";
 import { Task } from "@/types";
-import { Plus, Calendar, Check, X } from "lucide-react";
+import { TaskCard } from "@/components/TaskCard";
 
 export default function Tasks() {
   const { spaces, createTask, toggleTaskCompletion, deleteTask, updateTask, createSubtask, toggleSubtaskCompletion } = useTask();
@@ -56,7 +55,7 @@ export default function Tasks() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900/50 backdrop-blur-sm">
       <div className="max-w-4xl mx-auto p-6">
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -68,37 +67,41 @@ export default function Tasks() {
               variant="outline"
               size="icon"
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="border dark:border-gray-700"
             >
               {theme === 'dark' ? <Sun className="h-[1.2rem] w-[1.2rem]" /> : <Moon className="h-[1.2rem] w-[1.2rem]" />}
             </Button>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-blue-500 hover:bg-blue-600">
+                <Button className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700">
                   <Plus className="w-4 h-4 mr-2" />
                   Create Todo
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="dark:bg-gray-800 dark:border-gray-700">
                 <DialogHeader>
-                  <DialogTitle>Create New Task</DialogTitle>
+                  <DialogTitle className="dark:text-white">Create New Task</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4">
                   <Input
                     placeholder="Task title"
                     value={newTaskData.title}
                     onChange={(e) => setNewTaskData(prev => ({ ...prev, title: e.target.value }))}
+                    className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                   />
                   <Textarea
                     placeholder="Task description (optional)"
                     value={newTaskData.description}
                     onChange={(e) => setNewTaskData(prev => ({ ...prev, description: e.target.value }))}
+                    className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                   />
                   <Input
                     type="date"
                     value={newTaskData.dueDate}
                     onChange={(e) => setNewTaskData(prev => ({ ...prev, dueDate: e.target.value }))}
+                    className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   />
-                  <Button onClick={handleCreateTask} className="w-full">
+                  <Button onClick={handleCreateTask} className="w-full bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700">
                     Create Task
                   </Button>
                 </div>
@@ -109,66 +112,27 @@ export default function Tasks() {
 
         <div className="grid gap-4 mb-20">
           {allTasks.map((task) => (
-            <Card key={task.id} className="p-4 dark:bg-gray-800">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => toggleTaskCompletion(task.spaceId, task.id)}
-                    className={`w-5 h-5 rounded-full border-2 ${
-                      task.completed
-                        ? "bg-blue-500 border-blue-500"
-                        : "border-gray-300"
-                    }`}
-                  />
-                  <div className="flex flex-col">
-                    <span className={task.completed ? "line-through text-gray-500" : "dark:text-white"}>
-                      {task.title}
-                    </span>
-                    {task.description && (
-                      <span className="text-sm text-gray-500">{task.description}</span>
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  {task.dueDate && (
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-gray-500" />
-                      <span className="text-sm text-gray-500">
-                        {new Date(task.dueDate).toLocaleDateString()}
-                      </span>
-                    </div>
-                  )}
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => {
-                      setEditingTask({
-                        spaceId: task.spaceId,
-                        task: { ...task },
-                        newSubtask: ''
-                      });
-                      setIsEditOpen(true);
-                    }}
-                  >
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => deleteTask(task.spaceId, task.id)}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </Card>
+            <TaskCard
+              key={task.id}
+              task={task}
+              onToggle={() => toggleTaskCompletion(task.spaceId, task.id)}
+              onEdit={() => {
+                setEditingTask({
+                  spaceId: task.spaceId,
+                  task: { ...task },
+                  newSubtask: ''
+                });
+                setIsEditOpen(true);
+              }}
+              onDelete={() => deleteTask(task.spaceId, task.id)}
+            />
           ))}
         </div>
 
         <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-          <DialogContent>
+          <DialogContent className="dark:bg-gray-800 dark:border-gray-700">
             <DialogHeader>
-              <DialogTitle>Edit Task</DialogTitle>
+              <DialogTitle className="dark:text-white">Edit Task</DialogTitle>
             </DialogHeader>
             {editingTask && (
               <div className="space-y-4">
@@ -179,6 +143,7 @@ export default function Tasks() {
                     ...editingTask,
                     task: { ...editingTask.task, title: e.target.value }
                   })}
+                  className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                 />
                 <Textarea
                   placeholder="Task description"
@@ -187,6 +152,7 @@ export default function Tasks() {
                     ...editingTask,
                     task: { ...editingTask.task, description: e.target.value }
                   })}
+                  className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                 />
                 <Input
                   type="date"
@@ -195,18 +161,19 @@ export default function Tasks() {
                     ...editingTask,
                     task: { ...editingTask.task, dueDate: e.target.value ? new Date(e.target.value) : undefined }
                   })}
+                  className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
                 <div className="space-y-2">
-                  <h3 className="text-sm font-medium">Subtasks</h3>
+                  <h3 className="text-sm font-medium dark:text-white">Subtasks</h3>
                   {editingTask.task.subtasks.map((subtask) => (
-                    <div key={subtask.id} className="flex items-center gap-2">
+                    <div key={subtask.id} className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
                       <input
                         type="checkbox"
                         checked={subtask.completed}
                         onChange={() => toggleSubtaskCompletion(editingTask.spaceId, editingTask.task.id, subtask.id)}
-                        className="rounded border-gray-300"
+                        className="rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700"
                       />
-                      <span className={subtask.completed ? "line-through text-gray-500" : ""}>
+                      <span className={`${subtask.completed ? "line-through text-gray-500 dark:text-gray-400" : "dark:text-white"}`}>
                         {subtask.title}
                       </span>
                     </div>
@@ -216,11 +183,20 @@ export default function Tasks() {
                       placeholder="New subtask"
                       value={editingTask.newSubtask}
                       onChange={(e) => setEditingTask({ ...editingTask, newSubtask: e.target.value })}
+                      className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                     />
-                    <Button onClick={handleCreateSubtask}>Add</Button>
+                    <Button 
+                      onClick={handleCreateSubtask}
+                      className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
+                    >
+                      Add
+                    </Button>
                   </div>
                 </div>
-                <Button onClick={handleUpdateTask} className="w-full">
+                <Button 
+                  onClick={handleUpdateTask} 
+                  className="w-full bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
+                >
                   Save Changes
                 </Button>
               </div>
