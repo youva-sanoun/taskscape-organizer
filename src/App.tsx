@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { TaskProvider } from "./contexts/TaskContext";
 import Index from "./pages/Index";
 import Today from "./pages/Today";
+import SpaceDetail from "./pages/SpaceDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -20,6 +21,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/space/:spaceId" element={<SpaceDetail />} />
             <Route path="/today" element={<Today />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

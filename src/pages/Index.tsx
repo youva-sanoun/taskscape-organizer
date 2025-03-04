@@ -8,10 +8,12 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { useNavigate } from "react-router-dom";
 
 export default function Index() {
   const { spaces, createSpace } = useTask();
   const [newSpaceName, setNewSpaceName] = useState("");
+  const navigate = useNavigate();
 
   const handleCreateSpace = () => {
     if (newSpaceName.trim()) {
@@ -55,7 +57,11 @@ export default function Index() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
           {spaces.map((space) => (
-            <Card key={space.id} className="p-6 hover:shadow-lg transition-shadow">
+            <Card 
+              key={space.id} 
+              className="p-6 hover:shadow-lg transition-shadow cursor-pointer"
+              onClick={() => navigate(`/space/${space.id}`)}
+            >
               <h3 className="text-xl font-semibold mb-4">{space.name}</h3>
               <Progress
                 value={(space.tasks.filter(t => t.completed).length / Math.max(space.tasks.length, 1)) * 100}
