@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { Space, Task, Subtask } from '@/types';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -8,6 +8,7 @@ interface TaskContextType {
   deleteSpace: (id: string) => void;
   createTask: (spaceId: string, title: string, description?: string, dueDate?: Date) => void;
   deleteTask: (spaceId: string, taskId: string) => void;
+  updateTask: (spaceId: string, taskId: string, updates: Partial<Task>) => void;
   toggleTaskCompletion: (spaceId: string, taskId: string) => void;
   createSubtask: (spaceId: string, taskId: string, title: string) => void;
   deleteSubtask: (spaceId: string, taskId: string, subtaskId: string) => void;
@@ -16,17 +17,24 @@ interface TaskContextType {
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
 
+const STORAGE_KEY = 'task-management-data';
+
 export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
-  const [spaces, setSpaces] = useState<Space[]>([
-    // Initialize with a default space for tasks without a specific space
-    {
+  const [spaces, setSpaces] = useState<Space[]>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? JSON.parse(saved) : [{
       id: "default",
       name: "Default",
       tasks: [],
       createdAt: new Date()
-    }
-  ]);
+    }];
+  });
+  
   const { toast } = useToast();
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(spaces));
+  }, [spaces]);
 
   const createSpace = useCallback((name: string) => {
     if (!name.trim()) return;
@@ -77,6 +85,24 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
       return space;
     }));
     toast({ description: "Task deleted successfully" });
+  }, [toast]);
+
+  const updateTask = useCallback((spaceId: string, taskId: string, updates: Partial<Task>) => {
+    setSpaces(prev => prev.map(space => {
+      if (space.id === spaceId) {
+        return {
+          ...space,
+          tasks: space.tasks.map(task => {
+            if (task.id === taskId) {
+              return { ...task, ...updates };
+            }
+            return task;
+          })
+        };
+      }
+      return space;
+    }));
+    toast({ description: "Task updated successfully" });
   }, [toast]);
 
   const toggleTaskCompletion = useCallback((spaceId: string, taskId: string) => {
@@ -181,6 +207,7 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
       deleteSpace,
       createTask,
       deleteTask,
+      updateTask,
       toggleTaskCompletion,
       createSubtask,
       deleteSubtask,
