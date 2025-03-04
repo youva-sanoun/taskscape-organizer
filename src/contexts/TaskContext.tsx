@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { Space, Task, Subtask } from '@/types';
 import { useToast } from '@/components/ui/use-toast';
@@ -169,6 +168,11 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
       return space;
     }));
   }, []);
+
+  const deleteSpace = useCallback((id: string) => {
+    setSpaces(prev => prev.filter(space => space.id !== id));
+    toast({ description: "Space deleted successfully" });
+  }, [toast]);
 
   return (
     <TaskContext.Provider value={{

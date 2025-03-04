@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Navigation } from "@/components/Navigation";
 import { useTask } from "@/contexts/TaskContext";
@@ -10,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 
 export default function Tasks() {
-  const { spaces, createTask } = useTask();
+  const { spaces, createTask, toggleTaskCompletion } = useTask();
   const [newTaskData, setNewTaskData] = useState({
     title: "",
     description: "",
