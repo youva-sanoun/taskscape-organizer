@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Navigation } from "@/components/Navigation";
 import { useTask } from "@/contexts/TaskContext";
@@ -13,14 +12,18 @@ import { useNavigate } from "react-router-dom";
 export default function Index() {
   const { spaces, createSpace } = useTask();
   const [newSpaceName, setNewSpaceName] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleCreateSpace = () => {
     if (newSpaceName.trim()) {
       createSpace(newSpaceName.trim());
       setNewSpaceName("");
+      setIsOpen(false);
     }
   };
+
+  const filteredSpaces = spaces.filter(space => space.id !== "default");
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -30,7 +33,7 @@ export default function Index() {
             <h1 className="text-3xl font-bold text-gray-900">Your Spaces</h1>
             <p className="text-gray-500 mt-1">Manage your projects and tasks</p>
           </div>
-          <Dialog>
+          <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
               <Button className="bg-blue-500 hover:bg-blue-600">
                 <Plus className="w-4 h-4 mr-2" />
@@ -56,7 +59,7 @@ export default function Index() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
-          {spaces.map((space) => (
+          {filteredSpaces.map((space) => (
             <Card 
               key={space.id} 
               className="p-6 hover:shadow-lg transition-shadow cursor-pointer"

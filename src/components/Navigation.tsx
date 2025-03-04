@@ -1,6 +1,6 @@
 
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutGrid, Calendar, Check } from 'lucide-react';
+import { LayoutGrid, List } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export const Navigation = () => {
@@ -15,18 +15,18 @@ export const Navigation = () => {
           location.pathname === "/" ? "bg-blue-500 text-white" : "hover:bg-gray-100"
         )}
       >
-        <LayoutGrid className="w-4 h-4" />
-        <span>Spaces</span>
+        <List className="w-4 h-4" />
+        <span>Tasks</span>
       </Link>
       <Link
-        to="/today"
+        to="/spaces"
         className={cn(
           "flex items-center gap-2 px-4 py-2 rounded-full transition-all",
-          location.pathname === "/today" ? "bg-blue-500 text-white" : "hover:bg-gray-100"
+          location.pathname === "/spaces" ? "bg-blue-500 text-white" : "hover:bg-gray-100"
         )}
       >
-        <Calendar className="w-4 h-4" />
-        <span>Today</span>
+        <LayoutGrid className="w-4 h-4" />
+        <span>Spaces</span>
       </Link>
     </div>
   );

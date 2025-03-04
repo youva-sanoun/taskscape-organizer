@@ -3,10 +3,10 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { TaskProvider } from "./contexts/TaskContext";
 import Index from "./pages/Index";
-import Today from "./pages/Today";
+import Tasks from "./pages/Tasks";
 import SpaceDetail from "./pages/SpaceDetail";
 import NotFound from "./pages/NotFound";
 
@@ -20,9 +20,9 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route path="/spaces" element={<Index />} />
+            <Route path="/" element={<Tasks />} />
             <Route path="/space/:spaceId" element={<SpaceDetail />} />
-            <Route path="/today" element={<Today />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

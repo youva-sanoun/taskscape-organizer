@@ -18,10 +18,20 @@ interface TaskContextType {
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
 
 export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
-  const [spaces, setSpaces] = useState<Space[]>([]);
+  const [spaces, setSpaces] = useState<Space[]>([
+    // Initialize with a default space for tasks without a specific space
+    {
+      id: "default",
+      name: "Default",
+      tasks: [],
+      createdAt: new Date()
+    }
+  ]);
   const { toast } = useToast();
 
   const createSpace = useCallback((name: string) => {
+    if (!name.trim()) return;
+    
     setSpaces(prev => [...prev, {
       id: crypto.randomUUID(),
       name,
@@ -31,14 +41,13 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
     toast({ description: "Space created successfully" });
   }, [toast]);
 
-  const deleteSpace = useCallback((id: string) => {
-    setSpaces(prev => prev.filter(space => space.id !== id));
-    toast({ description: "Space deleted successfully" });
-  }, [toast]);
-
   const createTask = useCallback((spaceId: string, title: string, description?: string, dueDate?: Date) => {
+    if (!title.trim()) return;
+    
+    const targetSpaceId = spaceId || "default";
+    
     setSpaces(prev => prev.map(space => {
-      if (space.id === spaceId) {
+      if (space.id === targetSpaceId) {
         return {
           ...space,
           tasks: [...space.tasks, {
@@ -47,7 +56,7 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
             description,
             completed: false,
             dueDate,
-            spaceId,
+            spaceId: targetSpaceId,
             subtasks: [],
             createdAt: new Date()
           }]
