@@ -1,16 +1,18 @@
 import { Button } from "@/components/ui/button";
 import { Navigation } from "@/components/Navigation";
 import { useTask } from "@/contexts/TaskContext";
-import { Plus, Calendar, Trash2, Edit, Check, X } from "lucide-react";
+import { Trash2, Edit, Sun, Moon } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { useTheme } from "next-themes";
+import { Task } from "@/types";
+import { Plus, Calendar, Check, X } from "lucide-react";
 
 export default function Tasks() {
-  const { spaces, createTask, toggleTaskCompletion, deleteTask, updateTask, createSubtask } = useTask();
+  const { spaces, createTask, toggleTaskCompletion, deleteTask, updateTask, createSubtask, toggleSubtaskCompletion } = useTask();
   const { theme, setTheme } = useTheme();
   const [newTaskData, setNewTaskData] = useState({
     title: "",
